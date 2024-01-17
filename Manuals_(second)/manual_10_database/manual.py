@@ -25,4 +25,3 @@ scheme_2 = {
 orders = s_taper.Taper("orders", "data.db").create_table(scheme_2)
 
 # Заполни обе таблицы различной информацией.
-
