@@ -138,8 +138,8 @@ def home_handler(msg: telebot.types.Message):
 def add_heal(msg: telebot.types.Message):
     _, food = heals.read("userid", msg.chat.id)
 
-    food["Хлеб"] = [1, 15]
-    food["Айва"] = [1, 50]
+    food["Хлеб"] = [1, 5]
+    food["Айва"] = [1, 10]
 
     heals.write([msg.chat.id, food])
     bot.send_message(msg.chat.id, "Выдали еду!")
@@ -447,7 +447,17 @@ def xp_check(msg: telebot.types.Message):
         player[4] += 5
         player[3] += 50
         bot.send_message(msg.chat.id, text=f'Вы достигли нового уровня! Теперь он составляет {player[5]}')
+        add_heal(msg)
+        add_heal(msg)
+        add_heal(msg)
+    else:
+        choice = random.randint(0, 100)
+        if choice in (0, temp[msg.chat.id]["defend"]):
+            add_heal(msg)
     users.write(player)
 
 
 bot.infinity_polling()
+
+# Внедрить в битву выдачу еды герою, в зависимости от принесенного им опыта.
+
