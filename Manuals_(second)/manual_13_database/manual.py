@@ -19,9 +19,13 @@ scheme = {
     'id': INT + KEY,
     'data': TEXT
 }
+
 users = s_taper.Taper('users', 'data.db').create_table(scheme)
+
 hard = (["я", "список", "внутри", "кортежа"], {"я": "словарь", "внутри": "кортежа"})
+
 # users.write([1, hard])
+
 print(users.read_all())
-print(users.read("ID", 1))
-print(users.read_obj("ID", 1).__dict__)
+print(users.read("id", 1))
+print(users.read_obj("id", 1).__dict__)

@@ -1,20 +1,20 @@
 # ДЗ
-# Создай модель таблицы игроков, где столбец инвентаря будет содержать словарь.
+# Создать модель таблицы игроков, где столбец инвентаря будет содержать словарь.
 # Пусть ключами будут названия предметов, а значениями — количество предметов.
-# Также создай функции добавления предметов и просмотра инвентаря для любого игрока.
+# Также создать функции добавления предметов и просмотра инвентаря для любого игрока.
 import pickle
 import s_taper
 from s_taper.consts import *
 
 
-def read_inventory(id):
-    data = players.read('id', id)
-    for invent in data[2]:
-        print(f'{invent}: {data[2][invent]}')
+def read_inventory(player_id):
+    data = players.read_obj('id', player_id)
+    for invent in data.inventory:
+        print(f'{invent}: {data.inventory[invent]}')
 
 
-def add_inventory(id, item):
-    data = players.read('id', id)
+def add_inventory(player_id, item):
+    data = players.read('id', player_id)
     flag = True
     for cur in data[2]:
         if cur == item:
@@ -34,14 +34,7 @@ scheme = {
 players = s_taper.Taper('players', 'data.db').create_table(scheme)
 
 players.write([1, 'Гриша', {'аптечка': 2, 'бургер': 2}])
-
-print('было:')
 read_inventory(1)
 
-# players.write([1, 'Гриша', {'аптечка': 2, 'бургер': 2}])
-# read_inventory(1)
-
 add_inventory(1, 'бургер')
-
-print('стало:')
 read_inventory(1)
