@@ -1,14 +1,15 @@
 # ДЗ
-# Создать бота опросника. Можно подключить базу данных.
+# Создать бота опросника. Можно подключить базу данных. Бот должен делать следующее:
+# 1. по команде в ЛС с пользователем создавать новый опрос;
+# 2. в ЛС с пользователем спрашивать название нового опроса;
+# 3. в ЛС с пользователем спрашивать список возможных ответов;
+# 4. где-то сохранять в связке id пользователя и id опроса;
+# 5. отправлять готовый опрос и в канал, где есть бот, и в группу, где есть бот;
+# 6. собирать анонимные ответы, считая их количество;
+# 7. по команде в ЛС с пользователем выдавать результат обоих опросов.
 import telebot
-from telebot.types import InlineQuery
-from telebot.types import InputTextMessageContent as ITMC
-from telebot.types import InlineQueryResultArticle as ILQRA
-from telebot.types import InlineQueryResultPhoto as ILQRP
-from telebot.types import InlineQueryResultVideo as ILQRV
 from dotenv import load_dotenv
 import os
-import math
 import s_taper
 from s_taper.consts import *
 
@@ -17,21 +18,15 @@ load_dotenv()
 TOKEN = os.getenv("TELEGRAM_INLINE_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
-plus_icon = "https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg"
-minus_icon = "https://pp.vk.me/c627626/v627626512/2a635/ILYe7N2n8Zo.jpg"
-divide_icon = "https://pp.vk.me/c627626/v627626512/2a620/oAvUk7Awps0.jpg"
-multiply_icon = "https://pp.vk.me/c627626/v627626512/2a62e/xqnPMigaP5c.jpg"
-
-# Хранение локальной информации
-temp = {}
-poll_temp = ""
-
 scheme = {
-    "name": TEXT + KEY,
-    'first': BLN
+    'user_id': INT + KEY,
+    'poll_ids': INT
 }
 
 users = s_taper.Taper('users', 'data.db').create_table(scheme)
+
+# Хранение локальной информации
+temp = {}
 
 
 @bot.message_handler(["start"])
@@ -39,183 +34,68 @@ def start(msg):
     bot.send_message(msg.chat.id, f"Да-да, я слушаю")
 
 
-@bot.inline_handler(func=lambda query: len(query.query) > 1)
-def inline(query: InlineQuery):
-    nums = query.query.split(" ")
-    # Решение уравнения
-    if "x" in nums:
-        if nums[1] == "+":
-            e = nums[4] + " - " + nums[2]
-        e = eval(e)
-        urav = ILQRA(
-            '4',
-            "Уравнение",
-            description=f"Результат: {e}",
-            input_message_content=ITMC(f"x = {e}"))
-        bot.answer_inline_query(query.id, [urav])
-        return
-    elif "Кот" in nums:
-        r = ILQRP(
-            '7',
-            'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg',
-            'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg',
-            input_message_content=ITMC('https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg'))
-        bot.answer_inline_query(query.id, [r])
-    elif 'Видео' in nums:
-        r = ILQRV('8',
-                  'https://github.com/eternnoir/pyTelegramBotAPI/blob/master/tests/test_data/test_video.mp4?raw=true',
-                  'video/mp4',
-                  'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg',
-                  'Title')
-        bot.answer_inline_query(query.id, [r])
-    elif 'Умножение' in nums:
-        r = ILQRP(
-            '9',
-            'https://xn--80afebc2bl4aj7g.xn--p1ai/upload/iblock/3eb/3ebc0dfa867e344cf30d81409cfd7558.jpg',
-            'https://xn--80afebc2bl4aj7g.xn--p1ai/upload/iblock/3eb/3ebc0dfa867e344cf30d81409cfd7558.jpg',
-            input_message_content=ITMC('https://xn--80afebc2bl4aj7g.xn--p1ai/upload/iblock/3eb/3ebc0dfa867e344cf30d81409cfd7558.jpg'))
-        bot.answer_inline_query(query.id, [r])
-    elif "Квадратные уравнения" in query.query:
-        video_url = 'https://www.youtube.com/watch?v=9NiVFyhY-f0'
-        r = ILQRV(
-            '10',
-            video_url=video_url,
-            mime_type='video/mp4',
-            thumbnail_url=video_url,
-            title='Видео с YouTube')
-        bot.answer_inline_query(query.id, [r])
+@bot.message_handler(["create_poll"])
+def create_poll(msg: telebot.types.Message):
+    global temp
+    temp.clear()
+    temp['poll_info'] = {}
+    temp['user_id'] = msg.from_user.id
+    if msg.chat.type == 'group':
+        bot.send_message(temp['user_id'], "Подтвердите желание запустить команду /create_poll")
     else:
-        nums = tuple(map(float, nums))
-        flag = False
-        if 0 in nums:
-            flag = True
+        bot.send_message(temp['user_id'], "Давайте создадим новый опрос. Введите название опроса:")
+        bot.register_next_step_handler(msg, create_poll_title)
 
-        # Считаем сумму
-        summ = sum(nums)
 
-        # Считаем разницу
-        diff = nums[0]
-        for el in nums[1:]:
-            diff -= el
+def create_poll_title(msg: telebot.types.Message):
+    global temp
+    temp['poll_title'] = msg.text
+    bot.send_message(temp['user_id'], f'Название опроса установлено "{temp['poll_title']}".'
+                                      f'\nТеперь перечислите варианты ответов (каждый с новой строки):')
+    bot.register_next_step_handler(msg, create_poll_answers)
 
-        # Считаем произведение
-        mult = nums[0]
-        for el in nums[1:]:
-            mult *= el
 
-        if not flag:
-            # Считаем частное
-            quo = nums[0]
-            for el in nums[1:]:
-                quo /= el
+def create_poll_answers(msg: telebot.types.Message):
+    global temp
+    temp['poll_answers'] = msg.text.split('\n')
+    temp['poll_id'] = bot.send_poll(temp['user_id'], temp['poll_title'], temp['poll_answers']).message_id
 
-        # Возведение в степень
-        multi = nums[0]
-        for el in nums[1:]:
-            multi **= el
+    users.write([temp['user_id'], temp['poll_id']])
 
-        # Квадратный корень
-        sqrt = math.sqrt(nums[0])
+    bot.send_message(temp['user_id'], "Опрос создан и разослан!")
+    bot.send_poll(-4190979732, temp['poll_title'], temp['poll_answers'])
+    bot.send_poll(-1002050227868, temp['poll_title'], temp['poll_answers'])
 
-        ans_1 = ILQRA(
-            '1',
-            "Сумма",
-            description=f"Результат: {summ}",
-            input_message_content=ITMC(f"{nums[0]} {''.join([f' + {i}' for i in nums[1:]])} = {summ}"),
-            thumbnail_url=plus_icon)
 
-        ans_2 = ILQRA(
-            '2',
-            "Разность",
-            description=f"Результат: {diff}",
-            input_message_content=ITMC(f"{nums[0]} {''.join([f' - {i}' for i in nums[1:]])} = {diff}"),
-            thumbnail_url=minus_icon)
-
-        ans_3 = ILQRA(
-            '3',
-            "Произведение",
-            description=f"Результат: {mult}",
-            input_message_content=ITMC(f"{nums[0]} {''.join([f' * {i}' for i in nums[1:]])} = {mult}"),
-            thumbnail_url=multiply_icon)
-
-        if not flag:
-            ans_4 = ILQRA(
-                '4',
-                "Деление",
-                description=f"Результат: {quo}",
-                input_message_content=ITMC(f"{nums[0]} {''.join([f' / {i}' for i in nums[1:]])} = {quo}"),
-                thumbnail_url=divide_icon)
-
-        ans_5 = ILQRA(
-            '5',
-            "Возведение в степень",
-            description=f"Результат: {multi}",
-            input_message_content=ITMC(f"{nums[0]} {''.join([f' ** {i}' for i in nums[1:]])} = {multi}"))
-
-        ans_6 = ILQRA(
-            '6',
-            "Корень",
-            description=f"Результат: {sqrt}",
-            input_message_content=ITMC(f"{nums[0]} {''.join([f' ** {i}' for i in nums[1:]])} = {sqrt}"))
-
-        if not flag:
-            bot.answer_inline_query(query.id, [ans_1, ans_2, ans_3, ans_4, ans_5, ans_6])
-        else:
-            bot.answer_inline_query(query.id, [ans_1, ans_2, ans_3, ans_5, ans_6])
+@bot.message_handler(["poll_info"])
+def poll_info(msg):
+    keys = temp['poll_info'].keys()
+    answer = ""
+    for key in keys:
+        answer += f'{key} — {temp['poll_info'][key]} голосов!\n'
+    bot.send_message(temp['user_id'], answer)
 
 
 @bot.message_handler(content_types=['text'])
-def math(msg, repeat=False):
-    global temp
-    if msg.text.lower().startswith("математик"):
-        temp["математик"] = msg.from_user.id
-        bot.send_message(msg.chat.id, "Чем помочь?")
-        bot.register_next_step_handler(msg, math_handler)
-    else:
-        bot.send_message(msg.chat.id, f"Пользователь {msg.from_user.id} написал в {msg.chat.id}")
-    if repeat:
-        bot.register_next_step_handler(msg, math_handler)
+def test(msg):
+   pass
 
 
-def math_handler(msg):
-    if temp["математик"] != msg.from_user.id:
-        math(msg, True)
-        return
-        # Решение уравнения
-    if "x" in msg.text:
-        nums = msg.text.split(" ")
-        if nums[1] == "+":
-            e = nums[4] + " - " + nums[2]
-        res = eval(e)
-        bot.send_message(msg.chat.id, f'x = {res}')
-    else:
-        bot.send_message(msg.chat.id, f"{eval(msg.text)}")
-
-
-@bot.channel_post_handler(content_types=["photo", 'text'])
+@bot.channel_post_handler(content_types=['text'])
 def post_check(msg):
-    if msg.text == "test":
-        bot.send_message(msg.chat.id, f"Бот активен, {msg.author_signature}!")
-    elif msg.text == "Опрос":
-        bot.send_poll(msg.chat.id, "Название опроса", ["Да", "Нет", "Не знаю"])
-    elif msg.text == "БД":
-        bot.send_message(msg.chat.id, poll_temp)
-
-    data = users.read('name', msg.author_signature)
-    if not data:
-        users.write([msg.author_signature, False])
-
-        bot.send_poll(msg.chat.id, "Откуда вы о нас узнали",
-                      ["От друга/подруги", "Из другого канала", "Из интернета", "Другое"])
+    pass
 
 
 @bot.poll_handler(func=lambda poll: True)
 def handle_poll_answer(poll: telebot.types.Poll):
-    global poll_temp
-    options: list[telebot.types.PollOption] = poll.options
-    poll_temp = ""
+    global temp
+    options = poll.options
     for o in options:
-        poll_temp += f'{o.text} — {o.voter_count} голосов!\n'
+        keys = temp['poll_info'].keys()
+        if o.text in keys:
+            temp['poll_info'][o.text] += o.voter_count
+        else:
+            temp['poll_info'][o.text] = o.voter_count
 
 
 bot.infinity_polling()
