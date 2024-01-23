@@ -1,0 +1,11 @@
+1. Регистрация в discord.
+2. Установка приложения discord desktop.
+3. Создание нового сервера (зеленый плюс) - свой шаблон - для меня и друзей - название и аватар.
+4. Авторизация на ресурсе разработчиков - https://discord.com/build/app-developers
+5. New Application - имя бота create
+6. Bot - presence intent - server members intent - message content intent - save changes
+7. OAuth2 - URL Generator - bot - Administrator
+8. Переходим по ссылке из предыдущего пункта - выбираем сервер "продолжить" - "администратор" авторизовать
+
+ДЗ:
+Создать аватар для профиля бота и установить её на портале разработчиков Discord.
