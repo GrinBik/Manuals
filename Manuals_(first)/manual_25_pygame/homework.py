@@ -1,3 +1,5 @@
+# ДЗ
+# Модернизировать программу таким образом, чтобы с помощью клавиш r, g, b - плавно менять цвет фона окна.
 import pygame
 
 
@@ -6,7 +8,6 @@ pygame.init()
 WIDTH = 480
 HEIGHT = 360
 
-# https://colorpicker.me/#aaf0d1
 RGB_color = (0, 0, 0)
 HEX_color = "#aaf0d1"
 name_color = "MediumOrchid"
@@ -51,6 +52,3 @@ while run:
     pygame.display.flip()
 
 pygame.quit()
-
-# ДЗ
-# Необходимо модернизировать программу таким образом, чтобы с помощью клавиш r, g, b - плавно менять цвет фона окна.
