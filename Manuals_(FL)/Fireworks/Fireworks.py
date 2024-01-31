@@ -1,60 +1,82 @@
+import time
 import turtle
 import random
 
 
-def test_start(size):
-    for p in range(5):
-        t.forward(size)
-        t.right(144)
-
-
+# Отрисовка звезды
 def create_star():
-    t.hideturtle()
-    t.speed(100)
-    t.fillcolor(choice)
+    # Скорость возникновения звезды должна быть максимальной
+    t.speed(150)
+    # Выбор случайного цвета звезды
+    choice = random.choice(colors)
+    t.color(choice)
+    # Отрисовка звезды
     t.begin_fill()
-    for x in range(20):
-        t.forward(90)
+    for x in range(17):
+        t.forward(STAR_SIZE)
         t.right(190)
     t.end_fill()
-    t.shape('arrow')
-    t.setheading(90)
-    t.speed(50)
 
 
-def start_firework():
-    pass
+# Запуск партии фейерверков
+def start_firework(reply_number):
+    # Запуск фейерверков reply_number раз
+    for i in range(reply_number):
+        # Перенос ручки на случайное место нижней грани экрана
+        t.penup()
+        t.goto(random.randint(LEFT_LIMIT, RIGHT_LIMIT), BOTTOM_LIMIT)
+        t.pendown()
+        # Ручка должна смотреть ровно вверх
+        t.setheading(90)
+        # При запуске цвет должен быть черным, а скорость должна быть заметной
+        t.pencolor('black')
+        t.speed(4)
+        # Отрисовка пунктира (запуск фейерверка)
+        for j in range(12):
+            t.forward(20)
+            t.penup()
+            t.forward(20)
+            t.pendown()
+        # Отрисовка звезды
+        create_star()
+        # Фиксация результата
+        time.sleep(3)
+        # Очистка холста
+        t.clear()
 
 
+# Создание ручки
+t = turtle.Pen()
+t.shape('arrow')
+t.speed(150)
+
+# Настройка экрана
+screen = turtle.Screen()
+WIDTH = 800
+HEIGHT = 600
+screen.setup(WIDTH, HEIGHT)
+screen.bgcolor('dark blue')
+
+# Константы для хранения пределов возникновения фейерверка, цвета и размера звезды
 colors = ['Yellow', 'Aqua', 'Red', 'Gold', 'Orange', 'Green', 'Lime', 'Cyan', 'Blue',
           'Brown', 'Grey', 'Purple', 'Violet', 'Pink']
-choice = ''
+STAR_SIZE = 70
+LEFT_LIMIT = int(-WIDTH / 2 + STAR_SIZE)
+RIGHT_LIMIT = int(WIDTH / 2 - STAR_SIZE)
+BOTTOM_LIMIT = int(-HEIGHT / 2)
 
-t = turtle.Pen()
-screen = turtle.Screen()
-screen.setup(600, 600)
-screen.bgcolor('firebrick4')
-t.setheading(90)
+# Запуск нужного кол-ва фейерверков
+while True:
+    firework_number = turtle.textinput('Количество фейерверков в партии', "Введите сколько будет залпов?")
+    try:
+        firework_number = int(firework_number)
+    except ValueError:
+        continue
+    else:
+        if firework_number != 0:
+            start_firework(firework_number)
+        else:
+            break
 
-for i in range(40):
-    t.shape('arrow')
-    choice = random.choice(colors)
-    t.pencolor(choice)
-    t.speed(100)
-    t.hideturtle()
-    t.penup()
-    t.goto(random.randint(-290, 290), -290)
-    t.pendown()
-    t.speed(50)
-
-    t.shape('arrow')
-    for j in range(50):
-        t.forward(5)
-        t.penup()
-        t.forward(5)
-        t.pendown()
-    t.clear()
-
-    test_start(155)
-
-turtle.mainloop()
+# Автоматическое закрытие окна при завершении запуска фейерверков
+turtle.bye()
