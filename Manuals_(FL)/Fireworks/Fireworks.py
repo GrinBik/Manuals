@@ -1,5 +1,11 @@
-import random
 import turtle
+import random
+
+
+def test_start(size):
+    for p in range(5):
+        t.forward(size)
+        t.right(144)
 
 
 def create_star():
@@ -16,9 +22,14 @@ def create_star():
     t.speed(50)
 
 
+def start_firework():
+    pass
+
+
 colors = ['Yellow', 'Aqua', 'Red', 'Gold', 'Orange', 'Green', 'Lime', 'Cyan', 'Blue',
           'Brown', 'Grey', 'Purple', 'Violet', 'Pink']
 choice = ''
+
 t = turtle.Pen()
 screen = turtle.Screen()
 screen.setup(600, 600)
@@ -44,6 +55,6 @@ for i in range(40):
         t.pendown()
     t.clear()
 
-    create_star()
+    test_start(155)
 
 turtle.mainloop()
