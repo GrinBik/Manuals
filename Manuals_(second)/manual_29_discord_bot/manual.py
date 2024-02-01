@@ -17,9 +17,19 @@ async def time(ctx: discord.commands.context.ApplicationContext):
 
 
 @bot.slash_command(description="Сложение")
-async def summ(ctx, first: int, second: int):
+async def summ(ctx: discord.commands.context.ApplicationContext, first: int, second: int):
     summa = first + second
     await ctx.respond(f"Ответ: {summa}.")
+
+
+@bot.message_command(name="Повысить репутацию")
+async def plus_rep(ctx: discord.commands.context.ApplicationContext, message: discord.Message):
+    await ctx.respond(f"+ Rep, {message.author.name}")
+
+
+@bot.user_command(name="Дата регистрации")
+async def account_creation_date(ctx, member: discord.Member):
+    await ctx.respond(f"{member.name} создал аккаунт {member.created_at}")
 
 
 bot.run(TOKEN)
