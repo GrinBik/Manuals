@@ -1,13 +1,13 @@
-from tkinter import *
+import s_taper
+from s_taper.consts import *
 
 
-root = Tk()
-root.geometry('800x600')
-root.title('Сетка')
+scheme = {
+    'user_id': INT + KEY,
+    'name': TEXT,
+    'rating': INT
+}
 
-empty_label = Label(root, text='тест', font=(None, 30))
-empty_label.grid(row=0, column=0)
+users = s_taper.Taper('users', 'data.db').create_table(scheme)
 
-btn = Button(root, text='пупсик', font=(None, 15))
-btn.grid(row=1, column=2)
-root.mainloop()
+user = users.read('user_id', 0)
