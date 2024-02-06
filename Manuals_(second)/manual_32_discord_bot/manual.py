@@ -36,6 +36,7 @@ bot = discord.Bot(intents=discord.Intents.all())
 
 calc = ""
 
+
 @bot.slash_command()
 async def test(ctx):
     link = Button(label="PyCord Docs", url="https://guide.pycord.dev/interactions/ui-components/buttons", emoji='🐍')
