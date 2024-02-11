@@ -3,26 +3,30 @@
 # записанных задом наперёд.
 
 def rlist(line):
+    # что точно известно и как можно было сделать ДЗ
     words = []
     current_word = ""
-
     for char in line:
         if char == ' ':
-            reversed_word = ''
-            for i in current_word:
-                reversed_word = i + reversed_word
-            words.append(reversed_word)
-            current_word = ""
+            words.append(current_word)
+            current_word = ''
+        elif char == ',':
+            continue
         else:
             current_word += char
+    words.append(current_word)
+    # ИЛИ что оно же
+    # можно сначала избавиться от возможных запятых
+    line = line.replace(',', '')
+    # разбиваем на список
+    words = line.split(' ')
+    # список для перевернутых слов
+    reversed_words = []
+    # переворачиваем слова
+    for word in words:
+        reversed_words.append(word[::-1])
+    return reversed_words
 
-    if len(current_word) > 0:
-        reversed_word = ''
-        for i in current_word:
-            reversed_word = i + reversed_word
-        words.append(reversed_word)
 
-    return words
-
-
-print(rlist('Довод как довод'))
+arr = rlist('Привет, как дела?')
+print(arr)

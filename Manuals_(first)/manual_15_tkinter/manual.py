@@ -57,7 +57,7 @@ def erase(event):
 
 def ask_color(event):
     global color
-    color_code = askcolor(title="Выбери цвет")[1]
+    color = askcolor(title="Выбери цвет")[1]
     size.configure(fg=color)
 
 
