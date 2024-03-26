@@ -33,4 +33,5 @@ def timer(message: telebot.types.Message, seconds):
     time.sleep(seconds)
     bot.send_message(message.chat.id, "Дзынь-дзынь!\nЧтобы запустить будильник еще раз нажмите /start")
 
+
 bot.infinity_polling()
