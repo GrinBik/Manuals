@@ -14,12 +14,12 @@ users = s_taper.Taper('users', 'data.db').create_table(scheme)
 # Ссылка на SQLite Studio: https://sqlitestudio.pl/
 
 scheme_2 = {
-    'user_id': INT + KEY,
+    'user_id': INT,
     'name': TEXT,
-    'order_id': INT,
-    'n': INT,
+    'order_id': INT + KEY,
+    'quantity': INT,
     'art': INT,
-    'sum': INT
+    'sum': FLT
 }
 
 orders = s_taper.Taper("orders", "data.db").create_table(scheme_2)

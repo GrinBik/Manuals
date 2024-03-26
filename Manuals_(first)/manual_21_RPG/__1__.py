@@ -102,6 +102,8 @@ def fight(victim):
     if result:
         victim.attack(hero)
         time.sleep(1)
+        if hero.hp <= 0:
+            exit()
         fight(victim)
     else:
         start()
