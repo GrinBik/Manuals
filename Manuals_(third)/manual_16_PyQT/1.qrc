@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>piramida.png</file>
+    <file>shar.png</file>
+    <file>parall.png</file>
+    <file>circle.png</file>
+    <file>square.png</file>
+    <file>triangle.png</file>
+  </qresource>
+</RCC>
