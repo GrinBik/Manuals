@@ -1,0 +1,4 @@
+PostgreSQL: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+
+ДЗ:
+Создать с помощью pgAdmin4 базу данных со случайным именем и таблицу одноклассников.  Вписать в неё несколько друзей.
