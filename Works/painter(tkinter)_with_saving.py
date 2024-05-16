@@ -2,12 +2,18 @@ import tkinter
 from tkinter.colorchooser import askcolor
 from tkinter.filedialog import asksaveasfile
 from PIL import ImageGrab, Image
+from tkinter.filedialog import asksaveasfile
 
 
 # Сохранение в файл формата ".jpg"
 def save_file():
-    # Название файла
-    name = filename.get()
+    # Доступные форматы файлов
+    files = [('Image Files', '*.jpg'),
+             ('Python Files', '*.py'),
+             ('Text Document', '*.txt'),
+             ('All Files', '*.*')]
+    # Диалоговое окно по выбору файла для сохранения
+    file_name = asksaveasfile(filetypes=files, defaultextension='*.jpg').name
     # Левая верхняя координата по X и Y
     x = root.winfo_rootx() + canvas.winfo_x()
     y = root.winfo_rooty() + canvas.winfo_y()
@@ -15,7 +21,7 @@ def save_file():
     x1 = x + canvas.winfo_width()
     y1 = y + canvas.winfo_height()
     # Сохранение
-    ImageGrab.grab().crop((x, y, x1, y1)).save(name + ".jpg")
+    ImageGrab.grab().crop((x, y, x1, y1)).save(file_name)
 
 
 # Сохранение новой формы ручки
