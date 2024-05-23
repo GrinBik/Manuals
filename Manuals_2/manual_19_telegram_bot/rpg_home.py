@@ -159,8 +159,10 @@ def callback(call: telebot.types.CallbackQuery):
         for key in food:
             kb.row(InlineKeyboardButton(f"{key} {food[key][1]}❤️ -- {food[key][0]}шт.",
                                         callback_data=f"food_{key}_{food[key][1]}"))
-
-        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=kb)
+        if food != {}:
+            bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=kb)
+        else:
+            bot.send_message(call.message.chat.id, text='пусто', reply_markup=clear)
 
 
 def eating(msg, ft, hp):
