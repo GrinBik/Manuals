@@ -161,7 +161,12 @@ def callback(call: telebot.types.CallbackQuery):
             kb.row(InlineKeyboardButton(f"{key} {food[key][1]}❤️ -- {food[key][0]}шт.",
                                         callback_data=f"food_{key}_{food[key][1]}"))
 
-        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=kb)
+        if food != {}:
+            bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=kb)
+        else:
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.send_message(call.message.chat.id, "У тебя нет еды (", reply_markup=clear)
+            bot.send_message(call.message.chat.id, text=text.menu)
     elif call.data.startswith("sleep_"):
         a = call.data.split("_")
         t = int(a[1])
