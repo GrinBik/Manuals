@@ -40,8 +40,8 @@ while True:
             # 1024 - это кол-во получаемых данных, которые декодируем из байтов в строку
             data = sock.recv(1024).decode()
             print("Получено сообщение: ", data)
-        except NameError:
+        except:
             pass
 
     # приостановим работу программы
-    time.sleep(5)
+    time.sleep(1)
