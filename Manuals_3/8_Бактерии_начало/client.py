@@ -13,3 +13,7 @@ sock.connect(("localhost", 10000))
 while True:
     # отправка команды
     sock.send("Хочу пойти направо".encode())
+
+    # получаем новое состояние игры
+    data = sock.recv(1024).decode()
+    print('Получено ', data)

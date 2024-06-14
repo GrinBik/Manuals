@@ -35,9 +35,16 @@ while True:
     for sock in players:
         try:
             # 1024 - это кол-во получаемых данных, которые декодируем из байтов в строку
-            data = sock.recv(34)
+            data = sock.recv(1024)
             data = data.decode()
             print("Получено: ", data)
+        except:
+            pass
+
+    # отправляем новое состояние игры игрокам
+    for sock in players:
+        try:
+            sock.send('Новое состояние игры'.encode())
         except:
             pass
 

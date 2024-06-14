@@ -1,44 +1,37 @@
-# Написать клиентскую программу, которая будет отправлять на сервер строчки из стихотворения Пушкина
 import socket
-import time
 
 
-# настраиваем клиентский сокет
+# создаем главный сокет socket.AF_INET - семейство адресов IPv4, socket.SOCK_STREAM - протокол TCP
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 # отключаем пакетирование
 sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
-# установка IP-адреса и порта (соединение)
+# связываем сокет с конкретным портом (IP-адрес и порт)
 sock.connect(("localhost", 10000))
 
 # чтение стихотворения из файла
-# переменная для хранения прочитанного
-temp = []
+text = ''
+
 # открываем файл
 with open('text.txt', 'r', encoding='UTF-8') as file:
     # читаем все строки
     lines = file.readlines()
     # перебор строк
     for line in lines:
-        # удаление последнего элемента переноса на новую строку
-        line = line.replace('\n', '')
-        # добавляем во временную переменную temp
-        temp.append(line)
+        text += line
+
 # храним прочитанное стихотворение в кортеже
-poem = tuple(temp)
-# удаление temp за ненадобностью
-del temp
+poem = tuple(text.split('\n'))
 
 # кол-во строк
-length = len(poem)
+poem_len = len(poem)
 i = 0
 
-# отправка сообщений пользователем постоянно
-# encode - кодирует сообщения (преобразовывает) в байты
+# отправка строк стихотворения
 while True:
     # отправка сообщения
-    sock.send(poem[i % length].encode())
+    sock.send(poem[i % poem_len].encode())
     i += 1
-    # заморозка выполнения на то же время, чот и на сервере!
-    time.sleep(5)
+
+    # прием сообщений и синхронизация с сервером
+    data = sock.recv(1024).decode()
+    print('Получено ', data)
